@@ -1,57 +1,65 @@
+"""Analyze the fictional CSV using time-bounded authentication sequences."""
+import argparse
 import csv
-from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
+from auth_patterns import detect_sequences
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_FILE = BASE_DIR / "sample-data" / "signin-events.csv"
+DEFAULT_INPUT = Path(__file__).resolve().parent.parent / 'sample-data' / 'signin-events.csv'
 
-failed_attempts = defaultdict(int)
-successful_events = []
 
-with open(DATA_FILE, "r", encoding="utf-8") as file:
-    reader = csv.DictReader(file)
+def load_events(path):
+    events = []
+    with path.open(encoding='utf-8-sig', newline='') as handle:
+        reader = csv.DictReader(handle)
+        required = {'timestamp', 'user', 'source_ip', 'status', 'application'}
+        if not required.issubset(reader.fieldnames or []):
+            raise ValueError('CSV missing required columns: ' + ', '.join(sorted(required)))
+        for line, row in enumerate(reader, 2):
+            try:
+                event = {key: row[key].strip() for key in required}
+                if not all(event.values()):
+                    raise ValueError('empty required field')
+                event['timestamp'] = datetime.fromisoformat(event['timestamp'])
+                if event['timestamp'].tzinfo is not None:
+                    raise ValueError('use naive timestamps in one documented timezone')
+                if event['status'] not in {'failed', 'success'}:
+                    raise ValueError('unknown status')
+                events.append(event)
+            except (ValueError, AttributeError) as exc:
+                raise ValueError(f'Invalid CSV row {line}: {exc}') from exc
+    return events
 
-    for row in reader:
-        key = (row["user"], row["source_ip"])
 
-        if row["status"] == "failed":
-            failed_attempts[key] += 1
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--input', type=Path, default=DEFAULT_INPUT)
+    parser.add_argument('--threshold', type=int, default=3)
+    parser.add_argument('--window-minutes', type=float, default=10)
+    args = parser.parse_args()
+    try:
+        events = load_events(args.input)
+        findings = detect_sequences(events, args.threshold, args.window_minutes)
+    except (OSError, ValueError) as exc:
+        parser.exit(2, f'Error: {exc}\n')
+    print('Integrated Security Case - Authentication Analysis')
+    print(f'Events: {len(events)}')
+    print(f'Rule: >= {args.threshold} failures in {args.window_minutes:g} minutes before success')
+    print(f'Sequences requiring review: {len(findings)}')
+    for finding in findings:
+        print(f"\nUser: {finding['user']}\nSource IP: {finding['source_ip']}")
+        print(f"Failed attempts before success: {finding['failed_count']}")
+        print(f"First failure: {finding['first_failure'].isoformat(sep=' ')}")
+        print(f"First matching success: {finding['success_time'].isoformat(sep=' ')}")
+        print('Successful application events from this point (context, not proof of misuse):')
+        for event in sorted(events, key=lambda item: item['timestamp']):
+            if ((event['user'], event['source_ip']) == (finding['user'], finding['source_ip'])
+                    and event['status'] == 'success' and event['timestamp'] >= finding['success_time']):
+                print(f"- {event['application']} at {event['timestamp'].isoformat(sep=' ')}")
+        print('Assessment: REVIEW FOR POSSIBLE ACCOUNT COMPROMISE')
+    if not findings:
+        print('No sequence met this rule; this does not establish that activity is benign.')
 
-        elif row["status"] == "success":
-            successful_events.append(row)
 
-print("Integrated Security Case - Authentication Analysis")
-print("=" * 52)
-
-for (user, source_ip), failed_count in failed_attempts.items():
-
-    if failed_count >= 3:
-        print()
-        print("Suspicious Authentication Pattern")
-        print("-" * 35)
-        print(f"User: {user}")
-        print(f"Source IP: {source_ip}")
-        print(f"Failed attempts: {failed_count}")
-
-        matching_successes = [
-            event
-            for event in successful_events
-            if event["user"] == user
-            and event["source_ip"] == source_ip
-        ]
-
-        if matching_successes:
-            print("Successful sign-ins from same source: YES")
-            print("Applications accessed:")
-
-            for event in matching_successes:
-                print(
-                    f"- {event['application']} "
-                    f"at {event['timestamp']}"
-                )
-
-            print("Assessment: REVIEW FOR POSSIBLE ACCOUNT COMPROMISE")
-
-        else:
-            print("Successful sign-ins from same source: NO")
-            print("Assessment: REPEATED AUTHENTICATION FAILURES")
+if __name__ == '__main__':
+    main()

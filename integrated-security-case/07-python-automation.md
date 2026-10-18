@@ -1,5 +1,8 @@
 # 07 - Python Automation
 
+[Reproduce this case](../REPRODUCE.md). The current detector requires timestamp-ordered failures within ten minutes before success. A success resets the sequence. Screenshots show an earlier script version; use the current commands for current output.
+
+
 ## Objective
 
 The goal of this stage is to automate part of the authentication investigation using Python.
@@ -45,9 +48,9 @@ Read authentication events
         ↓
 Group failed attempts by user + source IP
         ↓
-Identify 3 or more failed attempts
+Identify 3 or more failures within ten minutes before success
         ↓
-Search for successful sign-ins from same source
+Require a later success for the same user and source; reset the sequence
         ↓
 List applications accessed
         ↓

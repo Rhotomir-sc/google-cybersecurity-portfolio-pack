@@ -1,5 +1,8 @@
 # Integrated Security Case
 
+[Reproduce this case](../REPRODUCE.md). The current detector requires timestamp-ordered failures within ten minutes before success. A success resets the sequence. Screenshots show an earlier script version; use the current commands for current output.
+
+
 ## Overview
 
 This case brings together the main skills developed across my Google Cybersecurity Certificate portfolio into one fictional security investigation.

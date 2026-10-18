@@ -1,25 +1,23 @@
-# Network Baseline & Security Notes (Module 3)
+# Network baseline — collection pending
 
-## Purpose
-Create a simple network baseline and document common network security indicators for investigations.
+The old evidence image files were one-byte placeholders. A verifiable local baseline is still pending.
 
-## Baseline (my environment)
-- Host: Windows (local machine)
-- What I captured:
-  - IP configuration (IP/DNS/Gateway)
-  - Active connections snapshot
-  - Open/listening ports snapshot
+## Collection procedure
+On an authorized Windows lab host, record the date, timezone, network profile, and host role. Run:
 
-## Key concepts (quick notes)
-- **DNS:** unexpected domains, suspicious lookups
-- **HTTP/HTTPS:** unusual user-agents, repeated requests, strange destinations
-- **RDP/SMB:** exposed services or unusual access attempts
-- **Ports:** “expected vs unexpected” ports for the environment
+```powershell
+ipconfig /all
+Get-NetTCPConnection | Sort-Object State,LocalPort
+Get-NetUDPEndpoint | Sort-Object LocalPort
+```
 
-## Investigation mindset (SOC-style)
-- Start with a baseline (what is normal)
-- Compare anomalies (new connections/ports)
-- Correlate with endpoint evidence (if needed)
+Save selected output or screenshots after reviewing personal information. Label redactions. Explain unexpected listeners using process and service context.
 
-## Evidence (folder)
-- See: `./evidence/`
+| Observation | Baseline | Evidence | Follow-up |
+|---|---|---|---|
+| IP / DNS / gateway | Pending | Pending | Confirm network context |
+| TCP listeners/connections | Pending | Pending | Identify owning process and purpose |
+| UDP endpoints | Pending | Pending | Identify owning process and purpose |
+
+These commands are a procedure, not evidence of execution.
+[Evidence status](evidence/README.md) · [Artifact index](../ARTIFACTS.md)

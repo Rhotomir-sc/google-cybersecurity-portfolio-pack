@@ -1,5 +1,12 @@
 # Google Cybersecurity Professional Certificate - Portfolio
 
+## Start here
+
+- [Artifact index and evidence status](ARTIFACTS.md)
+- [Run the Python and SQL examples](REPRODUCE.md)
+- [Featured integrated case](integrated-security-case/README.md)
+
+
 ## Overview
 
 This repository documents my practical work completed alongside the **Google Cybersecurity Professional Certificate**.
@@ -43,7 +50,7 @@ The ninth course, **Accelerate Your Job Search with AI**, is career-development 
 # Portfolio Structure
 
 ```text
-google-cybersecurity-m1-m8-portfolio-pack/
+google-cybersecurity-portfolio-pack/
 │
 ├── 01_Module-1_Foundations-of-Cybersecurity/
 ├── 02_Module-2_Play-It-Safe_Manage-Security-Risks/

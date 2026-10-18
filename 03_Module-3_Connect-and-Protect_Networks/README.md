@@ -1,5 +1,8 @@
 # Module 3 - Connect and Protect: Networks and Network Security
 
+**Evidence status:** local network baseline capture is pending. See the [collection procedure](network-baseline-and-security-notes.md). Existing concept notes are not a completed capture.
+
+
 | Information | Details |
 |---|---|
 | Course | Connect and Protect: Networks and Network Security |
@@ -108,7 +111,7 @@ The purpose of a baseline is to understand what is normal before investigating w
 
 ## Baseline Approach
 
-My basic investigation approach was:
+The planned baseline investigation follows:
 
 ```text
 Establish normal network state
@@ -128,11 +131,9 @@ This helps reduce false assumptions during network investigations.
 
 ## Evidence
 
-I captured local IP configuration as part of the baseline process.
+The previous image link pointed to a one-byte placeholder. No usable baseline capture is currently available here.
 
-![IP configuration evidence](evidence/ev1_ipconfig.png)
-
-This evidence helped document the host's network configuration before analysing connections or exposed services.
+Follow the [collection procedure](network-baseline-and-security-notes.md), then add the actual output and its interpretation. [Evidence status](evidence/README.md).
 
 ---
 
