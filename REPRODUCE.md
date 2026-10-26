@@ -24,8 +24,9 @@ Loads the fixture into in-memory SQLite and runs all seven queries from the [SQL
 python 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/scripts/failed_login_analyzer.py
 python 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/scripts/ioc_extractor.py
 python 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/scripts/access_list_updater.py
+python -m unittest discover -s 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/tests -v
 ```
-The Module 7 failed-login example uses the committed CSV fixture (eight failures: four for alice and four for charlie) and counts events, not time-based bursts. Its historical screenshot shows an earlier seven-failure run. The IOC extractor uses limited patterns on embedded text; matching text is not proof of maliciousness. The access-list example modifies an in-memory list, not a live control.
+The Module 7 failed-login example uses the committed CSV fixture (eight failures: four for alice and four for charlie) and counts events, not time-based bursts. Its historical screenshot shows an earlier seven-failure run. The three offline tests check the current CSV counts, the embedded IOC examples, and the in-memory allow-list result; they do not validate real-world detection accuracy. The IOC extractor uses limited patterns on embedded text; matching text is not proof of maliciousness. The access-list example modifies an in-memory list, not a live control.
 
 ## Evidence boundaries
 The network baseline still needs genuine local outputs. Historical screenshots are retained, not presented as new lab execution. Run the current commands for current output.
