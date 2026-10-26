@@ -66,23 +66,23 @@ Count by source IP
 Review repeated failures
 ```
 
-Example output:
+Example output from the current committed CSV fixture (the screenshot below was captured with an earlier seven-failure version):
 
 ```text
 Failed Login Analysis
 =====================
 
-Total failed attempts: 7
+Total failed attempts: 8
 
 Failures by User
 ----------------
-alice : 3
-charlie : 4
+alice: 4 <-- REVIEW
+charlie: 4 <-- REVIEW
 
 Failures by Source IP
 ---------------------
-10.10.10.15 : 3
-185.44.21.90 : 4
+10.10.10.15: 4 <-- REVIEW
+185.44.21.90: 4 <-- REVIEW
 ```
 
 ![Failed login analyzer output](evidence/01-failed-login-analyzer-output.png)
