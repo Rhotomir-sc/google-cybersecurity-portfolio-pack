@@ -1,6 +1,7 @@
 """Educational authentication sequence detection; no external dependencies."""
 from collections import defaultdict, deque
 from datetime import timedelta
+from math import isfinite
 
 
 def detect_sequences(events, threshold=3, window_minutes=10):
@@ -10,8 +11,10 @@ def detect_sequences(events, threshold=3, window_minutes=10):
     Success resets a sequence. Equal timestamps do not establish ordering.
     Duplicate rows count as events; findings are review leads, not attack verdicts.
     """
-    if threshold < 1 or window_minutes <= 0:
-        raise ValueError('threshold and window_minutes must be positive')
+    if not isinstance(threshold, int) or isinstance(threshold, bool) or threshold < 1:
+        raise ValueError('threshold must be a positive integer')
+    if not isfinite(window_minutes) or window_minutes <= 0:
+        raise ValueError('window_minutes must be positive and finite')
     pending = defaultdict(deque)
     findings = []
     window = timedelta(minutes=window_minutes)

@@ -31,11 +31,24 @@ The script uses:
 
 ```text
 csv
-defaultdict
+argparse
+json
 pathlib
 ```
 
 to read and analyse the authentication dataset.
+
+---
+
+## Structured detection output
+
+The [AUTH-001 rule specification](DETECTION-RULE.md) documents expected matches, negative tests and analyst limitations. In addition to the default terminal output, the script now accepts `--format json` for offline downstream processing:
+
+```sh
+python integrated-security-case/scripts/analyze_signin_case.py --format json
+```
+
+The JSON records counts, matched event times, later application sign-ins and explicit uncertainty. This is a **synthetic training export**, not a Microsoft Entra ID API integration or a verified compromise.
 
 ---
 

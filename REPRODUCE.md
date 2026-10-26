@@ -5,12 +5,13 @@ Requires Python 3.10+; standard library only. Run from the repository root. Subs
 ## Integrated authentication case
 ```sh
 python integrated-security-case/scripts/analyze_signin_case.py
+python integrated-security-case/scripts/analyze_signin_case.py --format json
 python -m unittest discover -s integrated-security-case/tests -v
 ```
 
 Expected: 12 events; one sequence for emma.lee@northstar.example from 198.51.100.23; six failures before the first matching success at 2026-09-10 08:15:19. Later successful application events are printed as context.
 
-Options: `--input PATH --threshold 3 --window-minutes 10`.
+Options: `--input PATH --threshold 3 --window-minutes 10 --format text|json`. See the [AUTH-001 rule specification](integrated-security-case/DETECTION-RULE.md) for the output schema, negative tests, and false-positive boundaries.
 The detector sorts timestamps, groups by user and IP, and requires failures strictly before success. A success resets the sequence. The time-window boundary is inclusive. Equal timestamps do not establish order; duplicate rows count separately. All timestamps must use one scenario timezone. This heuristic does not prove compromise.
 
 ## SQL
