@@ -10,7 +10,7 @@
 | Detection and response | [Open artifact](06_Module-6_Sound-the-Alarm_Detection-and-Response/incident-report/incident-report.md) | Fictional report and reusable blank template |
 | Python automation | [Open artifact](07_Module-7_Automate-Cybersecurity-Tasks-with-Python/scripts/failed_login_analyzer.py) | Runnable scripts and historical screenshots |
 | Career preparation | [Open artifact](08_Module-8_Put-It-to-Work_Prepare-for-Cybersecurity-Jobs/README.md) | Written reflection |
-| Integrated case | [Northstar investigation](integrated-security-case/README.md) | Synthetic data and executable analysis; live response not claimed |
+| Integrated case | [Northstar investigation](integrated-security-case/README.md) + [AUTH-001 rule](integrated-security-case/DETECTION-RULE.md) | Synthetic data and executable analysis; live response not claimed |
 
 [Reproduce the work](REPRODUCE.md) · [Certificate](certificate/README.md) · [TryHackMe mapping](related-tryhackme-labs.md)
 
