@@ -1,6 +1,7 @@
 """Analyze the fictional CSV using time-bounded authentication sequences."""
 import argparse
 import csv
+import json
 from datetime import datetime
 from pathlib import Path
 from auth_patterns import detect_sequences
@@ -31,34 +32,93 @@ def load_events(path):
     return events
 
 
+def build_report(events, threshold=3, window_minutes=10):
+    """Return a deterministic, machine-readable investigation summary.
+
+    Later application sign-ins share an identity and IP, but may belong to
+    separate sessions. The rule itself is a lead for analyst review.
+    """
+    findings = detect_sequences(events, threshold, window_minutes)
+    ordered = sorted(events, key=lambda item: item['timestamp'])
+    results = []
+    for finding in findings:
+        later = [
+            {'application': item['application'],
+             'timestamp': item['timestamp'].isoformat(sep=' ')}
+            for item in ordered
+            if (item['user'], item['source_ip']) ==
+            (finding['user'], finding['source_ip'])
+            and item['status'] == 'success'
+            and item['timestamp'] >= finding['success_time']
+        ]
+        results.append({
+            'user': finding['user'],
+            'source_ip': finding['source_ip'],
+            'failed_count': finding['failed_count'],
+            'first_failure': finding['first_failure'].isoformat(sep=' '),
+            'first_matching_success': finding['success_time'].isoformat(sep=' '),
+            'later_successful_applications': later,
+            'disposition': 'review_required',
+        })
+    return {
+        'schema_version': 1,
+        'rule_id': 'AUTH-001',
+        'dataset': 'synthetic_educational_case',
+        'rule': {
+            'minimum_failures': threshold,
+            'window_minutes': window_minutes,
+            'group_by': ['user', 'source_ip'],
+            'success_must_follow_failures': True,
+        },
+        'event_count': len(events),
+        'finding_count': len(results),
+        'findings': results,
+        'limitations': [
+            'A matched sequence does not prove an account compromise.',
+            'Same user and IP do not prove the same authenticated session.',
+            'Synthetic data does not establish detection performance in production.',
+        ],
+    }
+
+
+def print_text_report(report):
+    """Keep the original human-readable workflow as the default."""
+    rule = report['rule']
+    print('Integrated Security Case - Authentication Analysis')
+    print(f"Events: {report['event_count']}")
+    print(f"Rule: >= {rule['minimum_failures']} failures in "
+          f"{rule['window_minutes']:g} minutes before success")
+    print(f"Sequences requiring review: {report['finding_count']}")
+    for finding in report['findings']:
+        print(f"\nUser: {finding['user']}\nSource IP: {finding['source_ip']}")
+        print(f"Failed attempts before success: {finding['failed_count']}")
+        print(f"First failure: {finding['first_failure']}")
+        print(f"First matching success: {finding['first_matching_success']}")
+        print('Successful application events from this point (context, not proof of misuse):')
+        for event in finding['later_successful_applications']:
+            print(f"- {event['application']} at {event['timestamp']}")
+        print('Assessment: REVIEW FOR POSSIBLE ACCOUNT COMPROMISE')
+    if not report['findings']:
+        print('No sequence met this rule; this does not establish that activity is benign.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, default=DEFAULT_INPUT)
     parser.add_argument('--threshold', type=int, default=3)
     parser.add_argument('--window-minutes', type=float, default=10)
+    parser.add_argument('--format', choices=['text', 'json'], default='text',
+                        help='Text summary (default) or JSON for offline analysis')
     args = parser.parse_args()
     try:
         events = load_events(args.input)
-        findings = detect_sequences(events, args.threshold, args.window_minutes)
-    except (OSError, ValueError) as exc:
+        report = build_report(events, args.threshold, args.window_minutes)
+    except (OSError, ValueError, OverflowError) as exc:
         parser.exit(2, f'Error: {exc}\n')
-    print('Integrated Security Case - Authentication Analysis')
-    print(f'Events: {len(events)}')
-    print(f'Rule: >= {args.threshold} failures in {args.window_minutes:g} minutes before success')
-    print(f'Sequences requiring review: {len(findings)}')
-    for finding in findings:
-        print(f"\nUser: {finding['user']}\nSource IP: {finding['source_ip']}")
-        print(f"Failed attempts before success: {finding['failed_count']}")
-        print(f"First failure: {finding['first_failure'].isoformat(sep=' ')}")
-        print(f"First matching success: {finding['success_time'].isoformat(sep=' ')}")
-        print('Successful application events from this point (context, not proof of misuse):')
-        for event in sorted(events, key=lambda item: item['timestamp']):
-            if ((event['user'], event['source_ip']) == (finding['user'], finding['source_ip'])
-                    and event['status'] == 'success' and event['timestamp'] >= finding['success_time']):
-                print(f"- {event['application']} at {event['timestamp'].isoformat(sep=' ')}")
-        print('Assessment: REVIEW FOR POSSIBLE ACCOUNT COMPROMISE')
-    if not findings:
-        print('No sequence met this rule; this does not establish that activity is benign.')
+    if args.format == 'json':
+        print(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False))
+    else:
+        print_text_report(report)
 
 
 if __name__ == '__main__':
