@@ -20,5 +20,7 @@ jobs:
         run: python tools/check_links.py
       - name: Test authentication analysis
         run: python -m unittest discover -s integrated-security-case/tests -v
+      - name: Test Module 7 Python examples
+        run: python -m unittest discover -s 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/tests -v
       - name: Run SQL case
         run: python tools/run_sql_case.py
