@@ -1,3 +1,8 @@
+"""Extract candidate IPv4 addresses, domains and SHA-256 digests from text.
+
+This is an educational parser, not a maliciousness verdict or threat-intel feed.
+"""
+import ipaddress
 import re
 
 security_text = """
@@ -13,27 +18,47 @@ ip_pattern = r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
 domain_pattern = r"\b[a-zA-Z0-9.-]+\.(?:com|net|org|click|top|io|thm)\b"
 sha256_pattern = r"\b[a-fA-F0-9]{64}\b"
 
-ip_addresses = re.findall(ip_pattern, security_text)
-domains = re.findall(domain_pattern, security_text)
-sha256_hashes = re.findall(sha256_pattern, security_text)
 
-print("IOC Extraction Results")
-print("======================")
+def extract_iocs(text):
+    """Return candidate indicators; validate IPv4 octets before reporting.
 
-print()
-print("IP Addresses")
-print("------------")
-for ip in ip_addresses:
-    print(ip)
+    Regex only proposes candidates. Domain suffixes are intentionally limited,
+    so absence of a match does not mean an input is safe.
+    """
+    valid_ipv4 = []
+    for candidate in re.findall(ip_pattern, text):
+        try:
+            address = ipaddress.ip_address(candidate)
+        except ValueError:
+            continue
+        if isinstance(address, ipaddress.IPv4Address):
+            valid_ipv4.append(candidate)
+    domains = re.findall(domain_pattern, text)
+    sha256_hashes = re.findall(sha256_pattern, text)
+    return {"ip_addresses": valid_ipv4, "domains": domains, "sha256_hashes": sha256_hashes}
 
-print()
-print("Domains")
-print("-------")
-for domain in domains:
-    print(domain)
 
-print()
-print("SHA-256 Hashes")
-print("--------------")
-for sha256 in sha256_hashes:
-    print(sha256)
+# Keep the original demonstration data available to the existing smoke tests.
+indicators = extract_iocs(security_text)
+ip_addresses = indicators["ip_addresses"]
+domains = indicators["domains"]
+sha256_hashes = indicators["sha256_hashes"]
+
+
+def main():
+    print("IOC Extraction Results")
+    print("======================")
+    for title, values in (
+        ("IP Addresses", ip_addresses),
+        ("Domains", domains),
+        ("SHA-256 Hashes", sha256_hashes),
+    ):
+        print()
+        print(title)
+        print("-" * len(title))
+        for value in values:
+            print(value)
+
+
+if __name__ == "__main__":
+    main()
