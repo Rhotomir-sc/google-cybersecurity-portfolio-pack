@@ -18,6 +18,8 @@ The script:
 - records a UTC capture timestamp but **does not export** raw IP addresses, usernames, machine names, process IDs, DNS data, or remote connections;
 - saves to a newly named **local file in the Windows temporary directory**, outside the repository.
 
+The JSON parser enforces an explicit field allowlist. Files containing unexpected raw IP addresses, hostnames, process details, or other additional fields are rejected instead of silently processed. This validation reduces accidental exposure; it does not make a local snapshot automatically safe to publish.
+
 Port numbers and bind information may still be sensitive. Review the output locally before sharing anything. If system policy prevents PowerShell script execution, respect that policy and use the manual review procedure below instead. Do not loosen security controls merely to produce portfolio evidence.
 
 Repeat the command **later on the same authorized host**, ideally after a documented service or environment change. Save both printed output paths for the next step. Do **not** change firewall rules or open ports as part of this baseline exercise.
