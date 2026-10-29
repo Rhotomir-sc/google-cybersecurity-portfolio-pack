@@ -4,7 +4,7 @@
 |---|---|---|
 | Foundations | [Open artifact](01_Module-1_Foundations-of-Cybersecurity/scope.md) | Written scope |
 | Risk and controls | [Open artifact](02_Module-2_Play-It-Safe_Manage-Security-Risks/risk-register.md) | Written risk register |
-| Networks | [Open artifact](03_Module-3_Connect-and-Protect_Networks/network-baseline-and-security-notes.md) | Capture pending |
+| Networks | [Collection and comparison guide](03_Module-3_Connect-and-Protect_Networks/network-baseline-and-security-notes.md) | Tested synthetic comparison; **actual local capture pending** |
 | Linux and SQL | [Open artifact](04_Module-4_Tools-of-the-Trade_Linux-and-SQL/sql-queries.md) | Written examples; integrated SQL reproducible |
 | Assets and vulnerabilities | [Open artifact](05_Module-5_Assets-Threats-and-Vulnerabilities/asset-risk-assessment.md) | Fictional assessment |
 | Detection and response | [Open artifact](06_Module-6_Sound-the-Alarm_Detection-and-Response/incident-report/incident-report.md) | Fictional report and reusable blank template |
