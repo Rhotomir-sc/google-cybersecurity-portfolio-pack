@@ -25,7 +25,7 @@ Web log findings and identity events are separate leads; the available evidence 
 |---|---|
 | [01 · Foundations](01_Module-1_Foundations-of-Cybersecurity/README.md) | Scope, security concepts and evidence discipline |
 | [02 · Risk management](02_Module-2_Play-It-Safe_Manage-Security-Risks/README.md) | Risk register and security control mapping |
-| [03 · Networks](03_Module-3_Connect-and-Protect_Networks/README.md) | Network security concepts; local baseline capture **pending** |
+| [03 · Networks](03_Module-3_Connect-and-Protect_Networks/README.md) | Read-only Windows baseline collector, [tested comparison workflow](03_Module-3_Connect-and-Protect_Networks/network-baseline-and-security-notes.md); owner's host capture **pending** |
 | [04 · Linux and SQL](04_Module-4_Tools-of-the-Trade_Linux-and-SQL/README.md) | Command-line analysis and query examples |
 | [05 · Assets and vulnerabilities](05_Module-5_Assets-Threats-and-Vulnerabilities/README.md) | Fictional asset risk assessment |
 | [06 · Detection and response](06_Module-6_Sound-the-Alarm_Detection-and-Response/README.md) | Incident report and response documentation |
