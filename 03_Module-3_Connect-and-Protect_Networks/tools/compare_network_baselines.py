@@ -11,6 +11,8 @@ from pathlib import Path
 VALID_PROTOCOLS = {"tcp", "udp"}
 VALID_SCOPES = {"loopback", "wildcard", "specific", "unknown"}
 VALID_SOURCES = {"local-windows-readonly-collector", "synthetic-test-fixture"}
+TOP_LEVEL_FIELDS = {"schema_version", "source", "captured_at_utc", "scope", "endpoints"}
+ENDPOINT_FIELDS = {"protocol", "port", "bind_scope"}
 
 
 def read_snapshot(path):
@@ -18,6 +20,8 @@ def read_snapshot(path):
         data = json.load(handle)
     if not isinstance(data, dict):
         raise ValueError("Snapshot must be a JSON object")
+    if set(data) != TOP_LEVEL_FIELDS:
+        raise ValueError("Snapshot has missing or unexpected fields; only minimized data is accepted")
     if type(data.get("schema_version")) is not int or data["schema_version"] != 1:
         raise ValueError("Unsupported snapshot schema_version")
     if data.get("source") not in VALID_SOURCES:
@@ -42,6 +46,8 @@ def read_snapshot(path):
     for index, endpoint in enumerate(endpoints, 1):
         if not isinstance(endpoint, dict):
             raise ValueError(f"Endpoint {index} must be an object")
+        if set(endpoint) != ENDPOINT_FIELDS:
+            raise ValueError(f"Endpoint {index}: unexpected or missing fields")
         protocol = endpoint.get("protocol")
         port = endpoint.get("port")
         scope = endpoint.get("bind_scope")
