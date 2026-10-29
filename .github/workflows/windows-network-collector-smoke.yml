@@ -1,0 +1,45 @@
+name: Windows collector smoke test
+
+on:
+  push:
+    paths:
+      - '03_Module-3_Connect-and-Protect_Networks/tools/collect-network-baseline.ps1'
+      - '.github/workflows/windows-network-collector-smoke.yml'
+  pull_request:
+    paths:
+      - '03_Module-3_Connect-and-Protect_Networks/tools/collect-network-baseline.ps1'
+      - '.github/workflows/windows-network-collector-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-collector:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collect minimized local runner snapshot
+        shell: powershell
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'module3-ci-snapshot.json'
+          & .\03_Module-3_Connect-and-Protect_Networks\tools\collect-network-baseline.ps1 -OutputPath $output
+          $snapshot = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
+          if ($snapshot.schema_version -ne 1 -or
+              $snapshot.source -ne 'local-windows-readonly-collector' -or
+              $null -eq $snapshot.endpoints) {
+              throw 'Unexpected collector output schema.'
+          }
+          Write-Host 'Collector returned the expected minimized snapshot schema.'
+      - name: Validate snapshot using Python comparator
+        shell: powershell
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'module3-ci-snapshot.json'
+          python .\03_Module-3_Connect-and-Protect_Networks\tools\compare_network_baselines.py --before $output --after $output --format json
+      # No snapshots, artifacts, host addresses, or secrets are uploaded.
