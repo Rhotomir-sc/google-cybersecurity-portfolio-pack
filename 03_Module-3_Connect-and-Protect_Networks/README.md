@@ -1,6 +1,6 @@
 # Module 3 - Connect and Protect: Networks and Network Security
 
-**Evidence status:** local network baseline capture is pending. See the [collection procedure](network-baseline-and-security-notes.md). Existing concept notes are not a completed capture.
+**Evidence status:** real host collection is pending. A read-only Windows collector, Python before/after comparator and synthetic automated tests are available. See the [collection and validation guide](network-baseline-and-security-notes.md).
 
 
 | Information | Details |
@@ -97,13 +97,12 @@ See:
 
 [Network Baseline & Security Notes](network-baseline-and-security-notes.md)
 
-The baseline included:
+The prepared workflow covers:
+- a privacy-minimized inventory of listening TCP and local UDP endpoints;
+- comparison of two local snapshots;
+- separate, manual review of IP configuration, DNS and gateway context when relevant.
 
-- IP configuration
-- DNS information
-- default gateway
-- active connections
-- listening ports
+The scripts **do not** capture full network traffic or establish whether a service can be reached remotely. No actual host snapshot is committed yet.
 
 The purpose of a baseline is to understand what is normal before investigating what is unusual.
 
@@ -131,9 +130,11 @@ This helps reduce false assumptions during network investigations.
 
 ## Evidence
 
-The previous image link pointed to a one-byte placeholder. No usable baseline capture is currently available here.
+The older image links were unusable placeholders and were removed. There is **no verified host capture** in this repository.
 
-Follow the [collection procedure](network-baseline-and-security-notes.md), then add the actual output and its interpretation. [Evidence status](evidence/README.md).
+A [read-only Windows collection procedure](network-baseline-and-security-notes.md) and [offline Python comparator](tools/compare_network_baselines.py) can be used to gather and explain before/after listener changes. The [synthetic fixtures and tests](tests/test_network_baselines.py) demonstrate code behavior, not actual host findings.
+
+[Evidence status](evidence/README.md).
 
 ---
 
@@ -269,9 +270,9 @@ During this module, I practiced:
 
 - understanding TCP/IP fundamentals
 - identifying common ports and protocols
-- reviewing IP configuration
-- establishing a simple network baseline
-- identifying active and listening network services
+- learning how to review IP configuration
+- preparing and testing a repeatable local listener-baseline comparison (real capture pending)
+- learning how to interpret listening network services
 - understanding DNS from a security perspective
 - analysing network traffic concepts
 - understanding firewall rules
@@ -325,7 +326,7 @@ Firewalls, segmentation, secure protocols, and controlled remote access can redu
 
 This module helped me build a stronger understanding of how networks operate and how defenders can analyse network activity.
 
-I created a simple network baseline, reviewed common network indicators, and connected the concepts with hands-on Wireshark, Nmap, and firewall auditing practice.
+I documented network baseline concepts and prepared a tested comparison workflow. Collecting and interpreting a real local baseline is **still pending**; the separate TryHackMe Wireshark, Nmap and firewall labs contain hands-on evidence for those topics.
 
 The most important lesson was that network security is not only about identifying connections.
 

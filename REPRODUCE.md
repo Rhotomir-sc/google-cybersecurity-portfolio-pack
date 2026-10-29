@@ -20,6 +20,19 @@ python tools/run_sql_case.py
 ```
 Loads the fixture into in-memory SQLite and runs all seven queries from the [SQL investigation](integrated-security-case/05-sql-security-analysis.md). Expect six failures, three successes from the reviewed source, and five high/critical assets. No external database service is required.
 
+## Module 3 — Windows network listener baseline
+
+[Collection procedure and evidence boundaries](03_Module-3_Connect-and-Protect_Networks/network-baseline-and-security-notes.md).
+
+The PowerShell script is **read-only** and saves a privacy-minimized TCP-listener/UDP-endpoint JSON snapshot to the local Windows temporary directory. It has not been executed on the repository owner's computer as part of this GitHub update. The comparator and synthetic fixtures can be verified without a Windows host:
+
+```sh
+python 03_Module-3_Connect-and-Protect_Networks/tools/compare_network_baselines.py --before 03_Module-3_Connect-and-Protect_Networks/tests/fixtures/before.json --after 03_Module-3_Connect-and-Protect_Networks/tests/fixtures/after.json
+python -m unittest discover -s 03_Module-3_Connect-and-Protect_Networks/tests -v
+```
+
+Expected synthetic result: TCP 8000 changes from loopback binding to wildcard; a TCP 5985 entry appears. These values are **test fixtures**, not a finding on any real Windows system. Binding scope alone does not prove reachability.
+
 ## Module 7
 ```sh
 python 07_Module-7_Automate-Cybersecurity-Tasks-with-Python/scripts/failed_login_analyzer.py

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "synthetic-test-fixture",
+  "scope": "listening_tcp_and_local_udp_endpoints_only",
+  "captured_at_utc": "2026-10-01T10:00:00+00:00",
+  "endpoints": [
+    {
+      "protocol": "tcp",
+      "port": 443,
+      "bind_scope": "wildcard"
+    },
+    {
+      "protocol": "tcp",
+      "port": 8000,
+      "bind_scope": "loopback"
+    },
+    {
+      "protocol": "udp",
+      "port": 5353,
+      "bind_scope": "specific"
+    }
+  ]
+}
