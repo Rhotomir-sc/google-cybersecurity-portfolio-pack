@@ -39,6 +39,23 @@ class Module7ExamplesTests(unittest.TestCase):
         self.assertEqual(len(ns["sha256_hashes"][0]), 64)
         self.assertIn("IOC Extraction Results", out.getvalue())
 
+    def test_ipv4_ioc_octets_are_validated(self):
+        ns = runpy.run_path(str(SCRIPTS / "ioc_extractor.py"), run_name="module_under_test")
+        result = ns["extract_iocs"](
+            "Invalid 999.999.999.999 and 256.1.2.3; valid 192.0.2.17. "
+            "Domain example.org and SHA256 " + "a" * 64
+        )
+        self.assertEqual(result["ip_addresses"], ["192.0.2.17"])
+        self.assertEqual(result["domains"], ["example.org"])
+        self.assertEqual(result["sha256_hashes"], ["a" * 64])
+
+    def test_ioc_extractor_empty_input_has_no_candidates(self):
+        ns = runpy.run_path(str(SCRIPTS / "ioc_extractor.py"), run_name="module_under_test")
+        self.assertEqual(
+            ns["extract_iocs"]("no useful indicators here"),
+            {"ip_addresses": [], "domains": [], "sha256_hashes": []}
+        )
+
     def test_in_memory_allow_list_update(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
