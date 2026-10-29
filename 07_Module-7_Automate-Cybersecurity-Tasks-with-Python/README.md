@@ -112,11 +112,13 @@ It identifies activity worth reviewing.
 
 The second script uses regular expressions to extract common Indicators of Compromise from text.
 
-It identifies:
+It identifies candidate indicators:
 
-- IPv4 addresses
-- domain names
+- IPv4 addresses (with numeric octet validation)
+- domain names from a limited set of suffixes
 - SHA-256 hashes
+
+A matched value is a text indicator, not a confirmation of malicious activity. The parser does not perform threat-intelligence enrichment or network requests.
 
 Example input contained:
 

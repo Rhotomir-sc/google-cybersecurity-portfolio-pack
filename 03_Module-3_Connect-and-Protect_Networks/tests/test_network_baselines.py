@@ -79,6 +79,39 @@ class BaselineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             read_snapshot(self.write_test_data(a))
 
+    def test_rejects_unexpected_private_fields(self):
+        # Refuse snapshots that might accidentally contain raw host/IP/user data.
+        for field, value in (
+            ("hostname", "not-to-be-exported"),
+            ("local_ip", "192.0.2.1"),
+            ("username", "test-user"),
+        ):
+            with self.subTest(field=field):
+                sample = self.valid_sample()
+                sample[field] = value
+                with self.assertRaises(ValueError):
+                    read_snapshot(self.write_test_data(sample))
+
+        for field, value in (
+            ("owning_process", 123),
+            ("local_address", "192.0.2.10"),
+        ):
+            with self.subTest(endpoint_field=field):
+                sample = self.valid_sample()
+                sample["endpoints"][0][field] = value
+                with self.assertRaises(ValueError):
+                    read_snapshot(self.write_test_data(sample))
+
+    def test_missing_expected_fields_are_rejected(self):
+        sample = self.valid_sample()
+        sample.pop("scope")
+        with self.assertRaises(ValueError):
+            read_snapshot(self.write_test_data(sample))
+        sample = self.valid_sample()
+        sample["endpoints"][0].pop("bind_scope")
+        with self.assertRaises(ValueError):
+            read_snapshot(self.write_test_data(sample))
+
     def test_invalid_timestamps_and_missing_schema(self):
         for stamp in ["2026-10-01T10:00:00", "invalid", "2026-10-01T10:00:00+03:00"]:
             a = self.valid_sample()

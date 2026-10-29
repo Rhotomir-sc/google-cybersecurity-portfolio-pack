@@ -4,10 +4,14 @@ on:
   push:
     paths:
       - '03_Module-3_Connect-and-Protect_Networks/tools/collect-network-baseline.ps1'
+      - '03_Module-3_Connect-and-Protect_Networks/tools/compare_network_baselines.py'
+      - '03_Module-3_Connect-and-Protect_Networks/tests/**'
       - '.github/workflows/windows-network-collector-smoke.yml'
   pull_request:
     paths:
       - '03_Module-3_Connect-and-Protect_Networks/tools/collect-network-baseline.ps1'
+      - '03_Module-3_Connect-and-Protect_Networks/tools/compare_network_baselines.py'
+      - '03_Module-3_Connect-and-Protect_Networks/tests/**'
       - '.github/workflows/windows-network-collector-smoke.yml'
   workflow_dispatch:
 
@@ -35,6 +39,17 @@ jobs:
               $snapshot.source -ne 'local-windows-readonly-collector' -or
               $null -eq $snapshot.endpoints) {
               throw 'Unexpected collector output schema.'
+          }
+          $expected = @('captured_at_utc', 'endpoints', 'schema_version', 'scope', 'source')
+          $actual = @($snapshot.PSObject.Properties.Name | Sort-Object)
+          if ((Compare-Object $expected $actual)) {
+              throw 'Collector included missing or unexpected top-level fields.'
+          }
+          foreach ($endpoint in @($snapshot.endpoints)) {
+              $names = @($endpoint.PSObject.Properties.Name | Sort-Object)
+              if ((Compare-Object @('bind_scope', 'port', 'protocol') $names)) {
+                  throw 'Collector included unexpected endpoint fields.'
+              }
           }
           Write-Host 'Collector returned the expected minimized snapshot schema.'
       - name: Validate snapshot using Python comparator
