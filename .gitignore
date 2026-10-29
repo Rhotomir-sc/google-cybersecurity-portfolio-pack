@@ -1,0 +1,7 @@
+# Local Python-generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local-only network snapshots. Never commit raw/unanalyzed host captures.
+03_Module-3_Connect-and-Protect_Networks/local-captures/
